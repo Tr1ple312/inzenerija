@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block body %}
+    <div class="categories-page">
+        <h1>Categories</h1>
+
+        {% if categories %}
+            <ul class="no-bullets">
+                {% for category in categories %}
+                    <li>
+                        <details>
+                            <summary>{{ category.name }}</summary>
+                            {% if category.description %}
+                                <p>{{ category.description }}</p>
+                            {% endif %}
+
+                            <!-- Кнопки редактирования и удаления -->
+                            <div class="action-buttons">
+                                <a href="#">
+                                    <button>Edit Category</button>
+                                </a>
+                                <a href='#'>
+                                    <button>Delete Category</button>
+                                </a>
+                            </div>
+                        </details>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No categories available.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistic{% endblock %}
+
+{% block body %}
+    <h1>Statistic</h1>
+    <ul>
+        <li><strong>Total Income:</strong> {{ total_in|floatformat:2 }}</li>
+        <li><strong>Total Expense:</strong> {{ total_ex|floatformat:2 }}</li>
+    </ul>
+{% endblock %}
