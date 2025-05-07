@@ -12,4 +12,8 @@ urlpatterns = [
 ]
 
 # TODO: сделать сайдбар
-# TODO: статистика
+# TODO: стилизация + оптимизация статистики
+# TODO: фильтры
+# TODO: EDIT, DELETE, NEW функции изменения
+# TODO: аторизация
+# TODO: current value API

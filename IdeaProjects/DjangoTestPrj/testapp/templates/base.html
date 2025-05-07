@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} {% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
     <link type="text/css" href="{% static 'testsite/css/styles.css' %}" rel="stylesheet" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -12,6 +12,7 @@
     <div class="navbar">
         <a href="{% url 'transaction' %}">Transaction</a>
         <a href="{% url 'category' %}">Categories</a>
+        <a href="{% url 'statistic' %}">Statistic</a>
         <a href="{% url 'about' %}">About</a>
         <a href="{% url 'current' %}">Current value</a>
 
@@ -20,10 +21,21 @@
         </div>
     </div>
 
+    <div class="main-container">
+        <div class="sidebar">
+            <ul>
+                <li><a href="{% url 'transaction' %}">Transaction</a></li>
+                <li><a href="{% url 'category' %}">Categories</a></li>
+                <li><a href="{% url 'statistic' %}">Statistic</a></li>
+                <li><a href="{% url 'about' %}">About</a></li>
+                <li><a href="{% url 'current' %}">Current value</a></li>
+            </ul>
+        </div>
 
-    <div class="content">
-    {% block body %}
-    {% endblock %}
+        <div class="content">
+            {% block body %}
+            {% endblock %}
+        </div>
     </div>
 </body>
 </html>

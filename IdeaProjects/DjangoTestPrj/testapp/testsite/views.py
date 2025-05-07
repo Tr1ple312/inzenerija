@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from .models import Transaction, Category
-from django.db.models import Sum
+from django.db.models import Sum, Case, When, DecimalField
 
 
 panel = [
@@ -31,7 +31,7 @@ def dynamic(request, id):
 
 
 def transaction_list(request):
-    transactions = Transaction.objects.all()
+    transactions = Transaction.objects.all().select_related('cat')
     data = {
         'transactions': transactions
     }
@@ -47,13 +47,33 @@ def category(request):
 
 
 def statistic_view(request):
-    total_ex = Transaction.objects.filter(transaction_type='expense').aggregate(total=Sum('amount'))['total']
-    total_in = Transaction.objects.filter(transaction_type='income').aggregate(total=Sum('amount'))['total']
-    data = {
-        'total_ex': total_ex,
-        'total_in': total_in
+    # Общие суммы
+    total = Transaction.objects.aggregate(
+        total_in=Sum(Case(When(transaction_type='income', then='amount'), output_field=DecimalField())),
+        total_ex=Sum(Case(When(transaction_type='expense', then='amount'), output_field=DecimalField()))
+    )
+
+    # Статистика по категориям
+    category_stats = (
+        Transaction.objects.values('cat__name')
+        .annotate(
+            cat_in=Sum(Case(When(transaction_type='income', then='amount'), output_field=DecimalField())),
+            cat_ex=Sum(Case(When(transaction_type='expense', then='amount'), output_field=DecimalField()))
+        )
+    )
+
+    # Добавляем вычисляемое поле
+    for stat in category_stats:
+        stat['total_cat_sum'] = (stat['cat_in'] or 0) - (stat['cat_ex'] or 0)
+
+    context = {
+        'total_in': total['total_in'] or 0,
+        'total_ex': total['total_ex'] or 0,
+        'total_sum': (total['total_in'] or 0) - (total['total_ex'] or 0),
+        'cat_stat': category_stats,
     }
-    return render(request, 'testsite/statistic.html', context=data)
+
+    return render(request, 'testsite/statistic.html', context)
 
 
 def page_not_found(request, exception):
