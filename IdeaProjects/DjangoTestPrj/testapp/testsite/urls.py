@@ -8,7 +8,8 @@ urlpatterns = [
     path('contact/', views.contact, name='current'),
     path('login/', views.login, name='login'),
     path('category/', views.category, name='category'),
-    path('statistic/', views.statistic_view, name='statistic')
+    path('statistic/', views.statistic_view, name='statistic'),
+    path('transadd/', views.trans_add, name='transaction-add')
 ]
 
 # TODO: сделать сайдбар

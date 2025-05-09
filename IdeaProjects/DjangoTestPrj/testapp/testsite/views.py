@@ -1,6 +1,8 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.template.defaultfilters import title
 
+from .forms import AddTransForm
 from .models import Transaction, Category
 from django.db.models import Sum, Case, When, DecimalField
 
@@ -66,14 +68,28 @@ def statistic_view(request):
     for stat in category_stats:
         stat['total_cat_sum'] = (stat['cat_in'] or 0) - (stat['cat_ex'] or 0)
 
-    context = {
+    data = {
         'total_in': total['total_in'] or 0,
         'total_ex': total['total_ex'] or 0,
         'total_sum': (total['total_in'] or 0) - (total['total_ex'] or 0),
         'cat_stat': category_stats,
     }
 
-    return render(request, 'testsite/statistic.html', context)
+    return render(request, 'testsite/statistic.html', context=data)
+
+
+def trans_add(request):
+    if request.method == 'POST':
+        form = AddTransForm(request.POST)
+        if form.is_valid():
+            form.save()  # Сохраняем транзакцию в базе данных
+            return redirect('transaction')  # Перенаправляем на страницу добавления
+    else:
+        form = AddTransForm()  # Инициализируем пустую форму при GET-запросе
+
+    data = {'form': form}
+    return render(request, 'testsite/transadd.html', context=data)
+
 
 
 def page_not_found(request, exception):

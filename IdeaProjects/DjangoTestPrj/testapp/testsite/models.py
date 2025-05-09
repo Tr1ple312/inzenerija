@@ -14,6 +14,12 @@ class Transaction(models.Model):
 
     cat =  models.ForeignKey('Category', on_delete=models.PROTECT, related_name='category')
 
+    class Meta:
+        ordering = ['-transaction_date']
+        indexes = [
+            models.Index(fields=['-transaction_date'])
+        ]
+
     def __str__(self):
         return f"Transaction {self.transaction_id} - {self.amount} {self.transaction_type}"
 
