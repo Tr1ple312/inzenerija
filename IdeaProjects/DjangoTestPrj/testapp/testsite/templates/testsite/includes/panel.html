@@ -1,5 +1,0 @@
-<nav class="nav-panel">
-    {% for obj in panel %}
-        <a href="{% url obj.name %}">{{ obj.title }}</a>{% if not forloop.last %} | {% endif %}
-    {% endfor %}
-</nav>

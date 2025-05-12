@@ -237,3 +237,49 @@ details[open] summary {
     padding-left: 0;
     margin-left: 0;
 }
+
+/* Стили для иконок в таблице транзакций */
+.transaction-table .edit-icon, .transaction-table .delete-icon {
+    font-size: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-left: 10px;
+    padding: 8px;
+    border-radius: 50%; /* Скругляем иконки */
+    background-color: #f4f4f4; /* Легкий фон для иконок */
+    transition: all 0.3s ease; /* Плавный переход для всех изменений */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Легкая тень для иконок */
+}
+
+/* Иконка редактирования (синий цвет) */
+.transaction-table .edit-icon i {
+    color: #007bff; /* Синий цвет для иконки редактирования */
+}
+
+/* Иконка удаления (красный цвет) */
+.transaction-table .delete-icon i {
+    color: #dc3545; /* Красный цвет для иконки удаления */
+}
+
+/* Эффект при наведении на иконки */
+.transaction-table .edit-icon:hover {
+    background-color: #e6f0ff; /* Светло-синий фон при наведении на редактирование */
+    transform: scale(1.1); /* Немного увеличиваем иконку */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Увеличиваем тень при наведении */
+}
+
+.transaction-table .delete-icon:hover {
+    background-color: #f8d7da; /* Светло-красный фон при наведении на удаление */
+    transform: scale(1.1); /* Немного увеличиваем иконку */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Увеличиваем тень при наведении */
+}
+
+/* Убираем подчеркивание у ссылок */
+.transaction-table .edit-icon, .transaction-table .delete-icon {
+    text-decoration: none;
+}
+
+/* Позиционирование иконок в таблице */
+.transaction-table td a {
+    margin: 0 5px;
+}
