@@ -1,0 +1,243 @@
+/* Сброс базовых отступов */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Навигационная панель */
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    padding: 0px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    position: fixed; /* Закрепляем navbar */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Убедимся, что navbar всегда поверх остальных элементов */
+}
+
+/* Контейнер для левых ссылок */
+.navbar .left-links {
+    display: flex;  /* размещаем ссылки слева */
+}
+
+/* Контейнер для правой ссылки (Login) */
+.navbar .right-links {
+    margin-left: auto;  /* отодвигаем блок с Login вправо */
+}
+
+/* Ссылки в панели */
+.navbar a {
+    color: white;
+    padding: 18px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    display: block;
+    transition: background-color 0.3s;
+}
+
+/* Эффект наведения */
+.navbar a:hover {
+    background-color: #575757;
+}
+
+.main-container {
+    display: flex;
+    margin-top: 60px;
+
+}
+
+/* Сайдбар */
+.sidebar {
+    position: fixed;
+    top: 60px; /* Отступ под navbar */
+    left: 0;
+    width: 150px; /* Ширина сайдбара */
+    height: calc(100vh - 60px); /* Высота экрана минус navbar */
+    background-color: #333;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 999; /* Чтобы сайдбар был ниже navbar, но выше контента */
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    padding: 10cpx 0;  /* Отступ между элементами остаётся без изменений */
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: white;
+    padding: 10px 25px;  /* Уменьшение горизонтальных отступов */
+    font-size: 18px;
+    display: block;
+    transition: background-color 0.3s;
+    line-height: 2;  /* Увеличение расстояния между строками (по вертикали) */
+}
+
+/* Эффект наведения */
+.sidebar a:hover {
+    background-color: #575757;
+}
+
+/* Контент */
+.content {
+    margin-left: 150px; /* Отступ от сайдбара (ширина сайдбара) */
+    padding: 20px;
+    flex: 1;
+    max-width: 1000px; /* Максимальная ширина контента */
+    margin: 40px auto; /* Автоматическое центрирование контента по горизонтали */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* Заголовки */
+.content h1, .content h2, .content h3 {
+    margin-top: 0;
+}
+
+/* Стили для таблицы транзакций */
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff; /* Белый фон для таблицы */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Тень для таблицы */
+}
+
+.transaction-table th, .transaction-table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Новый стиль для заголовков таблицы */
+.transaction-table th {
+    background-color: #333;  /* Темно-синий фон */
+    color: white;  /* Белый текст */
+    font-weight: bold;
+    text-transform: uppercase;  /* Заглавные буквы */
+    letter-spacing: 1px;  /* Немного больший интервал между буквами */
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); /* Лёгкая тень */
+}
+
+/* Чередование фона строк */
+.transaction-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.transaction-table tr:hover {
+    background-color: #f1f1f1;  /* Лёгкий эффект при наведении на строку */
+    cursor: pointer;  /* Указатель на строках */
+}
+/* Стили для страницы Categories */
+.categories-page {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 40px auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* Заголовок для страницы Categories */
+.categories-page h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333; /* Цвет заголовка */
+    text-align: center;  /* Центрирование заголовка */
+}
+
+/* Стили для списка категорий */
+.categories-page ol {
+    list-style-position: outside;
+    padding-left: 40px;
+    font-size: 1.5em;
+}
+
+/* Стили для каждого элемента категории */
+.categories-page li {
+    margin-bottom: 10px;
+}
+
+/* Стили для элемента категории с описанием */
+.categories-page details summary {
+    font-size: 1.3em;  /* Еще уменьшен размер шрифта для названия категории */
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;  /* Цвет текста заголовка категории */
+    margin-bottom: 5px;
+}
+
+/* Стили для описания категории */
+.categories-page details p {
+    font-size: 1em;
+    color: #555;  /* Цвет текста описания */
+    margin-top: 5px;
+}
+
+/* Плавное раскрытие */
+details[open] summary {
+    background-color: #f1f1f1;  /* Цвет фона раскрытого элемента */
+}
+
+/* Стили для кнопок редактирования и удаления */
+.categories-page .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.categories-page .action-buttons button {
+    padding: 8px 10px;
+    font-size: 0.9em;
+    border: none;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.categories-page .action-buttons button:hover {
+    background-color: #575757;
+}
+
+.statistics-page details summary {
+    font-size: 1.8em;  /* БОЛЬШЕ, чем на странице категорий */
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.statistics-page h1 {
+    text-align: center;
+}
+
+
+.no-bullets {
+    list-style-type: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+
+
+
