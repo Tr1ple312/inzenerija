@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import TransDelete
+from .views import TransDelete, CategoryAdd
 
 urlpatterns = [
     path('', views.transaction_list, name='transaction'),
@@ -13,6 +13,7 @@ urlpatterns = [
     path('transadd/', views.TransAdd.as_view(), name='transaction-add'),
     path('update/<int:pk>', views.TransUpdate.as_view(), name='transaction-update'),
     path('delete/<int:pk>/', TransDelete.as_view(), name='transaction-delete'),
+    path('categoryadd/', CategoryAdd.as_view(), name='category-add')
 
 ]
 

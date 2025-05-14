@@ -88,6 +88,12 @@ class TransAdd(CreateView):
         context['title'] = 'Add new transaction'
         return context
 
+class CategoryAdd(CreateView):
+    model = Category
+    fields = ['name', 'description']
+    template_name = 'testsite/category_add.html'
+    success_url = reverse_lazy('transaction')
+
 
 class TransUpdate(UpdateView):
     model = Transaction
