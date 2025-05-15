@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="content transaction-delete">
+  <h2 class="transaction-title">{{ title }}</h2>
+
+  <div class="transaction-info">
+    {% if object_type == 'transaction' %}
+      <p><strong>№:</strong> {{ object.pk }}</p>
+      <p><strong>Amount:</strong> {{ object.amount }}</p>
+      <p><strong>Type:</strong> {{ object.transaction_type }}</p>
+      <p><strong>Category:</strong> {{ object.cat }}</p>
+      <p><strong>Date:</strong> {{ object.transaction_date }}</p>
+
+    {% elif object_type == 'category' %}
+      <p><strong>Name:</strong> {{ object.name }}</p>
+      <p><strong>Description:</strong> {{ object.description }}</p>
+    {% endif %}
+  </div>
+
+  <form method="post" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+  </form>
+
+  <a href="{% url 'transaction' %}" class="btn-secondary">Cancel</a>
+</div>
+{% endblock %}

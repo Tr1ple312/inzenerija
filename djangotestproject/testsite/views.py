@@ -1,8 +1,8 @@
-from django.http import HttpResponse
+from django.contrib import messages
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import UpdateView, CreateView, DeleteView
-from .forms import AddTransForm
 from .models import Transaction, Category
 from django.db.models import Sum, Case, When, DecimalField
 
@@ -49,13 +49,12 @@ def category(request):
 
 
 def statistic_view(request):
-    # Общие суммы
+
     total = Transaction.objects.aggregate(
         total_in=Sum(Case(When(transaction_type='income', then='amount'), output_field=DecimalField())),
         total_ex=Sum(Case(When(transaction_type='expense', then='amount'), output_field=DecimalField()))
     )
 
-    # Статистика по категориям
     category_stats = (
         Transaction.objects.values('cat__name')
         .annotate(
@@ -79,45 +78,84 @@ def statistic_view(request):
 
 
 class TransAdd(CreateView):
-    form_class = AddTransForm
-    template_name = 'testsite/transadd.html'
+    model = Transaction
+    fields = ['amount', 'transaction_type', 'cat']
+    template_name = 'testsite/add_new.html'
     success_url = reverse_lazy('transaction')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['object_type'] = 'transaction'
         context['title'] = 'Add new transaction'
         return context
-
-class CategoryAdd(CreateView):
-    model = Category
-    fields = ['name', 'description']
-    template_name = 'testsite/category_add.html'
-    success_url = reverse_lazy('transaction')
 
 
 class TransUpdate(UpdateView):
     model = Transaction
     fields = ['amount', 'transaction_type', 'cat']
-    template_name = 'testsite/transadd.html'
+    template_name = 'testsite/add_new.html'
     success_url = reverse_lazy('transaction')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['object_type'] = 'transaction'
         context['title'] =  'Transaction update'
         return context
 
 
 class TransDelete(DeleteView):
     model = Transaction
-    template_name = 'testsite/delete_trans.html'
+    template_name = 'testsite/delete.html'
     success_url = reverse_lazy('transaction')  # куда перенаправлять после удаления
-    context_object_name = 'transaction'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['object_type'] = 'transaction'
         context['title'] = 'Delete transaction'
-        print(context)  # Выведет контекст в консоль для отладки
         return context
+
+
+class CategoryAdd(CreateView):
+    model = Category
+    fields = ['name', 'description']
+    template_name = 'testsite/add_new.html'
+    success_url = reverse_lazy('category')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_type'] = 'category'
+        context['title'] = 'Add new category'
+        return context
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class CategoryUpdate(UpdateView):
+     model = Category
+     fields = ['name', 'description']
+     template_name = 'testsite/add_new.html'
+     success_url = reverse_lazy('category')
+
+     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_type'] = 'category'
+        context['title'] = 'Update category'
+        return context
+
+
+class CategoryDelete(DeleteView):
+    model = Category
+    template_name = 'testsite/delete.html'
+    success_url = reverse_lazy('category')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_type'] = 'category'
+        context['title'] = 'Delete category'
+        return context
+
 
 def page_not_found(request, exception):
     return render(request, 'errors/error404.html', status=404)

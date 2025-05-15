@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.text import slugify
+
 
 class Transaction(models.Model):
 
@@ -12,7 +14,7 @@ class Transaction(models.Model):
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     transaction_date = models.DateTimeField(auto_now_add=True,  db_index=True)
 
-    cat =  models.ForeignKey('Category', on_delete=models.PROTECT, related_name='category')
+    cat =  models.ForeignKey('Category', on_delete=models.PROTECT, related_name='transactions')
 
     class Meta:
         ordering = ['-transaction_date']
@@ -32,10 +34,18 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
+        ordering = ['-pk']
 
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Category.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

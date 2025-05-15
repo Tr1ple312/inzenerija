@@ -1,4 +1,6 @@
-/* Сброс базовых отступов */
+/* =========================
+   Общие сбросы и базовые стили
+========================= */
 body, html {
     margin: 0;
     padding: 0;
@@ -7,7 +9,50 @@ body, html {
     color: #333;
 }
 
-/* Навигационная панель */
+/* =========================
+   Кнопки
+========================= */
+.btn {
+    padding: 12px 25px;
+    font-size: 1.2em;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    line-height: 1;
+}
+
+.btn:hover {
+    background-color: #575757;
+}
+
+.btn-danger {
+    background-color: #d9534f;
+}
+
+.btn-secondary {
+  padding: 12px 25px;
+  font-size: 1.2em;
+  background-color: #5bc0de; /* светло-синий */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+}
+
+.btn-secondary:hover {
+  background-color: #31b0d5; /* темнее при наведении */
+}
+
+/* =========================
+   Навигационная панель
+========================= */
 .navbar {
     background-color: #333;
     overflow: hidden;
@@ -15,26 +60,23 @@ body, html {
     justify-content: space-between;
     align-items: center;
     height: 60px;
-    padding: 0px;
+    padding: 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    position: fixed; /* Закрепляем navbar */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 1000; /* Убедимся, что navbar всегда поверх остальных элементов */
+    z-index: 1000;
 }
 
-/* Контейнер для левых ссылок */
 .navbar .left-links {
-    display: flex;  /* размещаем ссылки слева */
+    display: flex;
 }
 
-/* Контейнер для правой ссылки (Login) */
 .navbar .right-links {
-    margin-left: auto;  /* отодвигаем блок с Login вправо */
+    margin-left: auto;
 }
 
-/* Ссылки в панели */
 .navbar a {
     color: white;
     padding: 18px 25px;
@@ -44,27 +86,22 @@ body, html {
     transition: background-color 0.3s;
 }
 
-/* Эффект наведения */
 .navbar a:hover {
     background-color: #575757;
 }
 
-.main-container {
-    display: flex;
-    margin-top: 60px;
-
-}
-
-/* Сайдбар */
+/* =========================
+   Сайдбар
+========================= */
 .sidebar {
     position: fixed;
-    top: 60px; /* Отступ под navbar */
+    top: 60px;
     left: 0;
-    width: 150px; /* Ширина сайдбара */
-    height: calc(100vh - 60px); /* Высота экрана минус navbar */
+    width: 150px;
+    height: calc(100vh - 60px);
     background-color: #333;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    z-index: 999; /* Чтобы сайдбар был ниже navbar, но выше контента */
+    z-index: 999;
 }
 
 .sidebar ul {
@@ -74,31 +111,37 @@ body, html {
 }
 
 .sidebar li {
-    padding: 10cpx 0;  /* Отступ между элементами остаётся без изменений */
+    padding: 10px 0;
 }
 
 .sidebar a {
     text-decoration: none;
     color: white;
-    padding: 10px 25px;  /* Уменьшение горизонтальных отступов */
+    padding: 10px 25px;
     font-size: 18px;
     display: block;
     transition: background-color 0.3s;
-    line-height: 2;  /* Увеличение расстояния между строками (по вертикали) */
+    line-height: 2;
 }
 
-/* Эффект наведения */
 .sidebar a:hover {
     background-color: #575757;
 }
 
-/* Контент */
+/* =========================
+   Контент
+========================= */
+.main-container {
+    display: flex;
+    margin-top: 60px;
+}
+
 .content {
-    margin-left: 150px; /* Отступ от сайдбара (ширина сайдбара) */
+    margin-left: 150px;
     padding: 20px;
     flex: 1;
-    max-width: 1000px; /* Максимальная ширина контента */
-    margin: 40px auto; /* Автоматическое центрирование контента по горизонтали */
+    max-width: 1000px;
+    margin: 40px auto;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -106,46 +149,129 @@ body, html {
     line-height: 1.6;
 }
 
-/* Заголовки */
 .content h1, .content h2, .content h3 {
     margin-top: 0;
 }
 
-/* Стили для таблицы транзакций */
+/* =========================
+   Формы
+========================= */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    font-size: 1.2em;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* =========================
+   Таблица транзакций
+========================= */
 .transaction-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    background-color: #ffffff; /* Белый фон для таблицы */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Тень для таблицы */
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.transaction-table th, .transaction-table td {
+.transaction-table th,
+.transaction-table td {
     padding: 12px;
     text-align: center;
     border: 1px solid #ddd;
 }
 
-/* Новый стиль для заголовков таблицы */
 .transaction-table th {
-    background-color: #333;  /* Темно-синий фон */
-    color: white;  /* Белый текст */
+    background-color: #333;
+    color: white;
     font-weight: bold;
-    text-transform: uppercase;  /* Заглавные буквы */
-    letter-spacing: 1px;  /* Немного больший интервал между буквами */
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); /* Лёгкая тень */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Чередование фона строк */
 .transaction-table tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
 .transaction-table tr:hover {
-    background-color: #f1f1f1;  /* Лёгкий эффект при наведении на строку */
-    cursor: pointer;  /* Указатель на строках */
+    background-color: #f1f1f1;
+    cursor: pointer;
 }
-/* Стили для страницы Categories */
+
+/* =========================
+   Иконки в таблице
+========================= */
+.transaction-table .edit-icon,
+.transaction-table .delete-icon {
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 8px;
+    border-radius: 50%;
+    background-color: #f4f4f4;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+.transaction-table .edit-icon i {
+    color: #007bff;
+}
+
+.transaction-table .delete-icon i {
+    color: #dc3545;
+}
+
+.transaction-table .edit-icon:hover {
+    background-color: #e6f0ff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.transaction-table .delete-icon:hover {
+    background-color: #f8d7da;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.transaction-table td a {
+    margin: 0 5px;
+}
+
+/* =========================
+   Удаление транзакции
+========================= */
+.transaction-delete {
+    font-size: 20px;
+    line-height: 1.8;
+}
+
+.transaction-title {
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+.transaction-info {
+    margin-bottom: 30px;
+}
+
+/* =========================
+   Категории
+========================= */
 .categories-page {
     padding: 20px;
     max-width: 1000px;
@@ -157,48 +283,41 @@ body, html {
     line-height: 1.6;
 }
 
-/* Заголовок для страницы Categories */
 .categories-page h1 {
     font-size: 2.5em;
     margin-bottom: 20px;
-    color: #333; /* Цвет заголовка */
-    text-align: center;  /* Центрирование заголовка */
+    color: #333;
+    text-align: center;
 }
 
-/* Стили для списка категорий */
 .categories-page ol {
     list-style-position: outside;
     padding-left: 40px;
     font-size: 1.5em;
 }
 
-/* Стили для каждого элемента категории */
 .categories-page li {
     margin-bottom: 10px;
 }
 
-/* Стили для элемента категории с описанием */
 .categories-page details summary {
-    font-size: 1.3em;  /* Еще уменьшен размер шрифта для названия категории */
+    font-size: 1.3em;
     font-weight: bold;
     cursor: pointer;
-    color: #333;  /* Цвет текста заголовка категории */
+    color: #333;
     margin-bottom: 5px;
 }
 
-/* Стили для описания категории */
 .categories-page details p {
     font-size: 1em;
-    color: #555;  /* Цвет текста описания */
+    color: #555;
     margin-top: 5px;
 }
 
-/* Плавное раскрытие */
 details[open] summary {
-    background-color: #f1f1f1;  /* Цвет фона раскрытого элемента */
+    background-color: #f1f1f1;
 }
 
-/* Стили для кнопок редактирования и удаления */
 .categories-page .action-buttons {
     display: flex;
     justify-content: space-between;
@@ -219,67 +338,27 @@ details[open] summary {
     background-color: #575757;
 }
 
+/* =========================
+   Статистика
+========================= */
+.statistics-page h1 {
+    text-align: center;
+}
+
 .statistics-page details summary {
-    font-size: 1.8em;  /* БОЛЬШЕ, чем на странице категорий */
+    font-size: 1.8em;
     font-weight: bold;
     cursor: pointer;
     color: #333;
     margin-bottom: 5px;
 }
 
-.statistics-page h1 {
-    text-align: center;
-}
-
-
+/* =========================
+   Прочее
+========================= */
 .no-bullets {
     list-style-type: none;
     padding-left: 0;
     margin-left: 0;
 }
 
-/* Стили для иконок в таблице транзакций */
-.transaction-table .edit-icon, .transaction-table .delete-icon {
-    font-size: 20px;
-    cursor: pointer;
-    text-decoration: none;
-    margin-left: 10px;
-    padding: 8px;
-    border-radius: 50%; /* Скругляем иконки */
-    background-color: #f4f4f4; /* Легкий фон для иконок */
-    transition: all 0.3s ease; /* Плавный переход для всех изменений */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Легкая тень для иконок */
-}
-
-/* Иконка редактирования (синий цвет) */
-.transaction-table .edit-icon i {
-    color: #007bff; /* Синий цвет для иконки редактирования */
-}
-
-/* Иконка удаления (красный цвет) */
-.transaction-table .delete-icon i {
-    color: #dc3545; /* Красный цвет для иконки удаления */
-}
-
-/* Эффект при наведении на иконки */
-.transaction-table .edit-icon:hover {
-    background-color: #e6f0ff; /* Светло-синий фон при наведении на редактирование */
-    transform: scale(1.1); /* Немного увеличиваем иконку */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Увеличиваем тень при наведении */
-}
-
-.transaction-table .delete-icon:hover {
-    background-color: #f8d7da; /* Светло-красный фон при наведении на удаление */
-    transform: scale(1.1); /* Немного увеличиваем иконку */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Увеличиваем тень при наведении */
-}
-
-/* Убираем подчеркивание у ссылок */
-.transaction-table .edit-icon, .transaction-table .delete-icon {
-    text-decoration: none;
-}
-
-/* Позиционирование иконок в таблице */
-.transaction-table td a {
-    margin: 0 5px;
-}
