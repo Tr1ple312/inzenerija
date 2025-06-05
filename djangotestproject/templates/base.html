@@ -11,14 +11,28 @@
 
 <body>
     <div class="navbar">
-        <a href="{% url 'transaction' %}">Transaction</a>
-        <a href="{% url 'category' %}">Categories</a>
-        <a href="{% url 'statistic' %}">Statistic</a>
-        <a href="{% url 'about' %}">About</a>
-
-        <div class="right-links">
-            <a href="{% url 'login' %}">Login</a>
+        <div class="left-links">
+            <a href="{% url 'transaction' %}">Transaction</a>
+            <a href="{% url 'category' %}">Categories</a>
+            <a href="{% url 'statistic' %}">Statistic</a>
+            <a href="{% url 'about' %}">About</a>
         </div>
+
+    <div class="right-links">
+        {% if user.is_authenticated %}
+            <span class="username"><i class="fas fa-user"></i> {{ user.username }}</span>
+            <form action="{% url 'users:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 5px;"></i> Logout
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'users:login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="#"><i class="fas fa-user-plus"></i> Register</a>
+        {% endif %}
+    </div>
+
     </div>
 
     <div class="main-container">
@@ -26,8 +40,7 @@
             <ul>
                 <li><a href="{% url 'transaction-add' %}">Add new transaction</a></li>
                 <li><a href="{% url 'category-add' %}">Add new category</a></li>
-                <a href="{% url 'current' %}">Current value</a>
-
+                <li><a href="{% url 'current' %}">Current value</a></li>
             </ul>
         </div>
 

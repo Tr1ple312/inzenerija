@@ -1,10 +1,13 @@
-from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView, DeleteView
 from .models import Transaction, Category
-from django.db.models import Sum, Case, When, DecimalField
+from django.db.models import Sum, Case, When, DecimalField, Q
+
+
 
 
 panel = [
@@ -20,50 +23,44 @@ def about(request):
     return render(request, 'testsite/about.html', context=inform)
 
 
-def contact(request):
+def current_val(request):
     return HttpResponse('this is contact page')
 
 
-def login(request):
-    return HttpResponse('this is login page')
-
-
-def dynamic(request, id):
-    return HttpResponse(f'id = {id}')
-
-
+@login_required()
 def transaction_list(request):
-    transactions = Transaction.objects.all().select_related('cat')
+    transactions = Transaction.objects.filter(user=request.user).select_related('cat')
     data = {
         'transactions': transactions
     }
     return render(request, 'testsite/transaction_list.html', context=data)
 
-
+@login_required()
 def category(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(Q(user=None) | Q(user=request.user))
     data = {
         'categories': categories
     }
     return render(request, 'testsite/category.html', context=data)
 
 
+@login_required()
 def statistic_view(request):
 
-    total = Transaction.objects.aggregate(
+    total = Transaction.objects.filter(user=request.user).aggregate(
         total_in=Sum(Case(When(transaction_type='income', then='amount'), output_field=DecimalField())),
         total_ex=Sum(Case(When(transaction_type='expense', then='amount'), output_field=DecimalField()))
     )
 
     category_stats = (
-        Transaction.objects.values('cat__name')
+        Transaction.objects.filter(user=request.user)
+        .values('cat__name')
         .annotate(
             cat_in=Sum(Case(When(transaction_type='income', then='amount'), output_field=DecimalField())),
             cat_ex=Sum(Case(When(transaction_type='expense', then='amount'), output_field=DecimalField()))
         )
     )
 
-    # Добавляем вычисляемое поле
     for stat in category_stats:
         stat['total_cat_sum'] = (stat['cat_in'] or 0) - (stat['cat_ex'] or 0)
 
@@ -77,7 +74,7 @@ def statistic_view(request):
     return render(request, 'testsite/statistic.html', context=data)
 
 
-class TransAdd(CreateView):
+class TransAdd(LoginRequiredMixin, CreateView):
     model = Transaction
     fields = ['amount', 'transaction_type', 'cat']
     template_name = 'testsite/add_new.html'
@@ -89,8 +86,21 @@ class TransAdd(CreateView):
         context['title'] = 'Add new transaction'
         return context
 
+    def form_valid(self, form):
+        cat = form.cleaned_data['cat']
+        if cat.user is not None and cat.user != self.request.user:
+            form.add_error('cat', 'Incorrect category')
+            return self.form_invalid(form)
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
-class TransUpdate(UpdateView):
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['cat'].queryset = Category.objects.filter(Q(user=None) | Q(user=self.request.user))
+        return form
+
+
+class TransUpdate(LoginRequiredMixin, UpdateView):
     model = Transaction
     fields = ['amount', 'transaction_type', 'cat']
     template_name = 'testsite/add_new.html'
@@ -102,8 +112,24 @@ class TransUpdate(UpdateView):
         context['title'] =  'Transaction update'
         return context
 
+    def get_queryset(self):
+        return Transaction.objects.filter(user=self.request.user)
 
-class TransDelete(DeleteView):
+    def form_valid(self, form):
+        cat = form.cleaned_data['cat']
+        if cat.user is not None and cat.user != self.request.user:
+            form.add_error('cat', 'Incorrect category')
+            return self.form_invalid(form)
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['cat'].queryset = Category.objects.filter(Q(user=None) | Q(user=self.request.user))
+        return form
+
+
+class TransDelete(LoginRequiredMixin, DeleteView):
     model = Transaction
     template_name = 'testsite/delete.html'
     success_url = reverse_lazy('transaction')  # куда перенаправлять после удаления
@@ -114,8 +140,11 @@ class TransDelete(DeleteView):
         context['title'] = 'Delete transaction'
         return context
 
+    def get_queryset(self):
+        return Transaction.objects.filter(user=self.request.user)
 
-class CategoryAdd(CreateView):
+
+class CategoryAdd(LoginRequiredMixin, CreateView):
     model = Category
     fields = ['name', 'description']
     template_name = 'testsite/add_new.html'
@@ -132,7 +161,7 @@ class CategoryAdd(CreateView):
         return super().form_valid(form)
 
 
-class CategoryUpdate(UpdateView):
+class CategoryUpdate(LoginRequiredMixin, UpdateView):
      model = Category
      fields = ['name', 'description']
      template_name = 'testsite/add_new.html'
@@ -144,8 +173,11 @@ class CategoryUpdate(UpdateView):
         context['title'] = 'Update category'
         return context
 
+     def get_queryset(self):
+         return Category.objects.filter(user=self.request.user)
 
-class CategoryDelete(DeleteView):
+
+class CategoryDelete(LoginRequiredMixin, DeleteView):
     model = Category
     template_name = 'testsite/delete.html'
     success_url = reverse_lazy('category')
@@ -156,6 +188,8 @@ class CategoryDelete(DeleteView):
         context['title'] = 'Delete category'
         return context
 
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
 
 def page_not_found(request, exception):
     return render(request, 'errors/error404.html', status=404)

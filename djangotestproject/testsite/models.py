@@ -1,14 +1,14 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.text import slugify
 
 
 class Transaction(models.Model):
-
     TRANSACTION_TYPES = [
         ('income', 'Income'),
         ('expense', 'Expense'),
     ]
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     transaction_id = models.AutoField(primary_key=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
@@ -27,6 +27,7 @@ class Transaction(models.Model):
 
 
 class Category(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # <- вот здесь добавь null=True, blank=True
     name = models.CharField(max_length=20, unique=True, db_index=True)
     description = models.CharField(max_length=500, blank=True, null=True)
     slug  =  models.SlugField(max_length=20, unique=True,  db_index=True)
