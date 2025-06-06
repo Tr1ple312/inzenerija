@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Exchange Rates{% endblock %}
+
+{% block body %}
+  <div class="content">
+    <h2 class="transaction-title" style="text-align: center;">Exchange Rates (Base: {{ base }})</h2>
+
+    {% if error %}
+      <div style="color: red; font-weight: bold; padding: 10px; background-color: #ffe5e5; border-radius: 5px;">
+        {{ error }}
+      </div>
+    {% else %}
+      <table class="transaction-table">
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Currency Code</th>
+            <th>Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rate in rates %}
+            <tr>
+              <td style="font-size: 1.5em;">{{ rate.flag }}</td>
+              <td><strong>{{ rate.code }}</strong></td>
+              <td>{{ rate.symbol }} {{ rate.rate }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <p class="transaction-info"><strong>Date:</strong> {{ date }}</p>
+    {% endif %}
+  </div>
+{% endblock %}
+
+

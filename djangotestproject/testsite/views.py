@@ -1,13 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+import requests
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView, DeleteView
 from .models import Transaction, Category
 from django.db.models import Sum, Case, When, DecimalField, Q
-
-
+from datetime import datetime
 
 
 panel = [
@@ -17,14 +16,53 @@ panel = [
     {'title':'Login', 'name': 'login'}
 ]
 
+CURRENCY_INFO = {
+    'USD': {'symbol': '$', 'flag': '🇺🇸'},
+    'EUR': {'symbol': '€', 'flag': '🇪🇺'},
+    'GBP': {'symbol': '£', 'flag': '🇬🇧'},
+    'JPY': {'symbol': '¥', 'flag': '🇯🇵'},
+    'RUB': {'symbol': '₽', 'flag': '🇷🇺'},
+    'CNY': {'symbol': '¥', 'flag': '🇨🇳'},
+    'CHF': {'symbol': 'kr', 'flag': '🇨🇭'},
+    'UAH': {'symbol': '₴', 'flag': '🇺🇦'},
+    'PLN': {'symbol': 'zł', 'flag': '🇵🇱'},
+    'CAD': {'symbol': 'C$', 'flag': '🇨🇦'},
+    'AUD': {'symbol': 'A$', 'flag': '🇦🇺'},
+}
+
+
+def exchange_rates(request):
+    try:
+        url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=6415fb4702ca403b9914a13de347826d&symbols=UAH,PLN,EUR,GBP,CAD,AUD,JPY,CNY,CHF,RUB"
+        response = requests.get(url)
+        data = response.json()
+
+        raw_rates = data.get('rates', {})
+        rates = []
+
+        for code, rate in raw_rates.items():
+            info = CURRENCY_INFO.get(code, {})
+            rates.append({
+                'code': code,
+                'rate': rate,
+                'symbol': info.get('symbol', ''),
+                'flag': info.get('flag', ''),
+            })
+
+        context = {
+            'base': data.get('base', 'USD'),
+            'date': data.get('date'),
+            'rates': rates,
+        }
+
+    except Exception as e:
+        context = {'error': f'Ошибка при получении данных: {e}'}
+
+    return render(request, 'testsite/exchange_rates.html', context)
 
 def about(request):
     inform = {'panel': panel}
     return render(request, 'testsite/about.html', context=inform)
-
-
-def current_val(request):
-    return HttpResponse('this is contact page')
 
 
 @login_required()
