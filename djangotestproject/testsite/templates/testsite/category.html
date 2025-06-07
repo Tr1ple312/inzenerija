@@ -16,7 +16,6 @@
                                 <p>{{ category.description }}</p>
                             {% endif %}
 
-                            <!-- Кнопки редактирования и удаления -->
                             <div class="action-buttons">
                                 <a href="{% url 'category_update' category.pk %}"><button>Edit Category</button></a>
                                 <a href="{% url 'category_delete' category.pk %}"><button>Delete Category</button></a>

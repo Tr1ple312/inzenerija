@@ -7,44 +7,57 @@
     <form method="post">
         {% csrf_token %}
 
+        {{ form.non_field_errors }}
+
         {% if object_type == 'transaction' %}
             <div class="form-group">
                 {{ form.amount.label_tag }}
                 {{ form.amount }}
-                {{ form.amount.errors }}
+                {% for error in form.amount.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 {{ form.transaction_type.label_tag }}
                 {{ form.transaction_type }}
-                {{ form.transaction_type.errors }}
+                {% for error in form.transaction_type.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 {{ form.cat.label_tag }}
                 {{ form.cat }}
-                {{ form.cat.errors }}
+                {% for error in form.cat.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
         {% elif object_type == 'category' %}
             <div class="form-group">
                 {{ form.name.label_tag }}
                 {{ form.name }}
-                {{ form.name.errors }}
+                {% for error in form.name.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 {{ form.description.label_tag }}
                 {{ form.description }}
-                {{ form.description.errors }}
+                {% for error in form.description.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
         {% else %}
             {{ form.as_p }}
         {% endif %}
 
-        <button type="submit" class="btn-secondary">Сохранить</button>
+        <button type="submit" class="btn-secondary">Save</button>
     </form>
 </div>
 {% endblock %}
+
 
 
 

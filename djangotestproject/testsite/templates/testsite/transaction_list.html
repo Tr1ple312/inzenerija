@@ -1,49 +1,71 @@
 {% extends 'base.html' %}
 
-{% block title %}Список транзакций{% endblock %}
+{% block title %}Transaction list{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1>Transactions</h1>
+<div class="container">
+    <h1>Transactions</h1>
 
-        <!-- Таблица транзакций -->
-        <table class="transaction-table">
-            <thead>
+    <table class="transaction-table">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for number, element in numbered_transactions %}
                 <tr>
-                    <th>№</th>
-                    <th>Amount</th>
-                    <th>Type</th>
-                    <th>Category</th>
-                    <th>Date</th>
-                    <th>Actions</th> <!-- Новый столбец для действий -->
+                    <td>{{ number }}</td>
+                    <td>{{ element.amount }}</td>
+                    <td>{{ element.transaction_type }}</td>
+                    <td>{{ element.cat.name }}</td>
+                    <td>{{ element.transaction_date }}</td>
+                    <td>
+                        <a href="{% url 'transaction-update' element.pk %}" class="edit-icon" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'transaction-delete' element.pk %}" class="delete-icon" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for element in transactions %}
-                    <tr>
-                        <td>{{ element.transaction_id }}</td>
-                        <td>{{ element.amount }}</td>
-                        <td>{{ element.transaction_type }}</td>
-                        <td>{{ element.cat.name }}</td>
-                        <td>{{ element.transaction_date }}</td>
-                        <td>
-                            <!-- Иконка редактирования -->
-                            <a href="{% url 'transaction-update' element.pk %}" class="edit-icon" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <!-- Иконка удаления -->
-                            <a href="{% url 'transaction-delete' element.pk %}" class="delete-icon" title="Delete">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="6">Нет транзакций для отображения.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% empty %}
+                <tr>
+                    <td colspan="6">No transactions</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Пагинация, как у тебя было -->
+    <div class="pagination-wrapper">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-btn first" title="First">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn prev" title="Previous">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        {% endif %}
+
+        <span class="pagination-page">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn next" title="Next">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-btn last" title="Last">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% endif %}
     </div>
+</div>
 {% endblock %}
 

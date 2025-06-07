@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 
@@ -22,12 +23,17 @@ class Transaction(models.Model):
             models.Index(fields=['-transaction_date'])
         ]
 
+    def clean(self):
+        super().clean()
+        if self.amount < 0:
+            raise ValidationError('Transaction amount cannot be negative')
+
     def __str__(self):
         return f"Transaction {self.transaction_id} - {self.amount} {self.transaction_type}"
 
 
 class Category(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # <- вот здесь добавь null=True, blank=True
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=20, unique=True, db_index=True)
     description = models.CharField(max_length=500, blank=True, null=True)
     slug  =  models.SlugField(max_length=20, unique=True,  db_index=True)

@@ -6,6 +6,8 @@ from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView, DeleteView
 from .models import Transaction, Category
 from django.db.models import Sum, Case, When, DecimalField, Q
+from django.core.paginator import Paginator
+
 
 
 panel = [
@@ -66,11 +68,26 @@ def about(request):
 
 @login_required()
 def transaction_list(request):
-    transactions = Transaction.objects.filter(user=request.user).select_related('cat')
-    data = {
-        'transactions': transactions
+    transactions = Transaction.objects.order_by('-transaction_date')
+    paginator = Paginator(transactions, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    total = paginator.count
+    start_index = page_obj.start_index()
+
+    numbered_transactions = []
+    for i, transaction in enumerate(page_obj, start=0):
+        number = total - (start_index - 1) - i
+        numbered_transactions.append((number, transaction))
+
+    context = {
+        'numbered_transactions': numbered_transactions,
+        'page_obj': page_obj,
     }
-    return render(request, 'testsite/transaction_list.html', context=data)
+    return render(request, 'testsite/transaction_list.html', context)
+
+
 
 @login_required()
 def category(request):
@@ -124,10 +141,16 @@ class TransAdd(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+        amount = form.cleaned_data.get('amount')
+        if amount < 0:
+            form.add_error('amount', 'Transaction amount cannot be negative')
+            return self.form_invalid(form)
+
         cat = form.cleaned_data['cat']
         if cat.user is not None and cat.user != self.request.user:
             form.add_error('cat', 'Incorrect category')
             return self.form_invalid(form)
+
         form.instance.user = self.request.user
         return super().form_valid(form)
 
