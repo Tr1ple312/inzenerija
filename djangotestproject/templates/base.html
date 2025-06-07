@@ -29,7 +29,7 @@
             </form>
         {% else %}
             <a href="{% url 'users:login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
-            <a href="#"><i class="fas fa-user-plus"></i> Register</a>
+            <a href="{% url 'users:register' %}"><i class="fas fa-user-plus"></i> Register</a>
         {% endif %}
     </div>
 

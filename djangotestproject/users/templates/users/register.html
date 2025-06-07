@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+<div class="content">
+  <h2 class="transaction-title" style="text-align: center;">Register</h2>
+
+  <form method="post" class="login-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}" />
+
+    {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.errors %}
+          <div style="color: red;">{{ field.errors|striptags }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn">Register</button>
+  </form>
+</div>
+{% endblock %}

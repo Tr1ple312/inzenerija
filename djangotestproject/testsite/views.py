@@ -6,7 +6,6 @@ from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView, DeleteView
 from .models import Transaction, Category
 from django.db.models import Sum, Case, When, DecimalField, Q
-from datetime import datetime
 
 
 panel = [
