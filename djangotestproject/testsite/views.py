@@ -1,9 +1,13 @@
+from datetime import date
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 import requests
+from django.core.cache import cache
 from django.http import HttpResponseForbidden
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.text import slugify
 from django.views.generic import UpdateView, CreateView, DeleteView
 from .models import Transaction, Category
 from django.db.models import Sum, Case, When, DecimalField, Q
@@ -34,43 +38,65 @@ CURRENCY_INFO = {
 
 
 def exchange_rates(request):
-    try:
-        url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=6415fb4702ca403b9914a13de347826d&symbols=UAH,PLN,EUR,GBP,CAD,AUD,JPY,CNY,CHF,RUB"
-        response = requests.get(url)
-        data = response.json()
+    cached_data = cache.get('exchange_rates')
+    if cached_data:
+        context = cached_data
+    else:
+        try:
+            url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=6415fb4702ca403b9914a13de347826d&symbols=UAH,PLN,EUR,GBP,CAD,AUD,JPY,CNY,CHF,RUB"
+            response = requests.get(url)
+            data = response.json()
 
-        raw_rates = data.get('rates', {})
-        rates = []
+            raw_rates = data.get('rates', {})
+            rates = []
 
-        for code, rate in raw_rates.items():
-            info = CURRENCY_INFO.get(code, {})
-            rates.append({
-                'code': code,
-                'rate': rate,
-                'symbol': info.get('symbol', ''),
-                'flag': info.get('flag', ''),
-            })
+            for code, rate in raw_rates.items():
+                info = CURRENCY_INFO.get(code, {})
+                rates.append({
+                    'code': code,
+                    'rate': rate,
+                    'symbol': info.get('symbol', ''),
+                    'flag': info.get('flag', ''),
+                })
 
-        context = {
-            'base': data.get('base', 'USD'),
-            'date': data.get('date'),
-            'rates': rates,
-        }
+            context = {
+                'base': data.get('base', 'USD'),
+                'date': data.get('date'),
+                'rates': rates,
+            }
+            cache.set('exchange_rates', context, 60 * 60)  # 1 час
 
-    except Exception as e:
-        context = {'error': f'Ошибка при получении данных: {e}'}
+        except Exception as e:
+            context = {'error': f'Ошибка при получении данных: {e}'}
 
     return render(request, 'testsite/exchange_rates.html', context)
+
 
 def about(request):
     inform = {'panel': panel}
     return render(request, 'testsite/about.html', context=inform)
 
 
-@login_required()
+@login_required
 def transaction_list(request):
-    transactions = Transaction.objects.order_by('-transaction_date')
-    paginator = Paginator(transactions, 50)
+    qs = Transaction.objects.filter(user=request.user).order_by('-transaction_date')
+
+    # Фильтры
+    transaction_type = request.GET.get('type')
+    category = request.GET.get('category')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+
+    if transaction_type in ['income', 'expense']:
+        qs = qs.filter(transaction_type=transaction_type)
+    if category:
+        qs = qs.filter(cat__slug=category)
+    if date_from:
+        qs = qs.filter(transaction_date__gte=date_from)
+    if date_to:
+        qs = qs.filter(transaction_date__lte=date_to)
+
+    paginator = Paginator(qs, 50)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -85,18 +111,20 @@ def transaction_list(request):
     context = {
         'numbered_transactions': numbered_transactions,
         'page_obj': page_obj,
+        'categories': Category.objects.all()
     }
     return render(request, 'testsite/transaction_list.html', context)
 
 
-
 @login_required()
 def category(request):
-    categories = Category.objects.filter(Q(user=None) | Q(user=request.user))
+    user = request.user if request.user.is_authenticated else None
+    categories = Category.objects.filter(Q(user=None) | Q(user=user))
     data = {
         'categories': categories
     }
     return render(request, 'testsite/category.html', context=data)
+
 
 
 @login_required()
@@ -211,6 +239,12 @@ class CategoryAdd(LoginRequiredMixin, CreateView):
     template_name = 'testsite/add_new.html'
     success_url = reverse_lazy('category')
 
+    BASE_CATEGORY_NAMES = [
+                            'Other', 'Clothing & Footwear', 'Education', 'Income', 'Utilities',
+                            'Travel', 'Entertainment', 'Health', 'Transportation', 'Groceries'
+                          ]
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['object_type'] = 'category'
@@ -219,26 +253,81 @@ class CategoryAdd(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        name = form.cleaned_data['name'].lower()
+
+        if name in [n.lower() for n in self.BASE_CATEGORY_NAMES]:
+            form.add_error('name', 'You cannot use this category name because it is reserved as a base category.')
+            return self.form_invalid(form)
+
+        if Category.objects.filter(name__iexact=name, user=self.request.user).exists():
+            form.add_error('name', 'You already have a category with this name.')
+            return self.form_invalid(form)
+
+        base_slug = slugify(name)
+        slug = base_slug
+        counter = 1
+        while Category.objects.filter(slug=slug).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+        form.instance.slug = slug
+
         return super().form_valid(form)
 
-
 class CategoryUpdate(LoginRequiredMixin, UpdateView):
-    # ...
+    model = Category
+    fields = ['name', 'description']
+    template_name = 'testsite/add_new.html'
+    success_url = reverse_lazy('category')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_type'] = 'category'
+        context['title'] = 'Update category'
+        return context
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Category.objects.none()
+        return Category.objects.filter(user=self.request.user)
+
     def dispatch(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.is_base:
-            return HttpResponseForbidden("You cannot edit a base category.")
-        return super().dispatch(request, *args, **kwargs)
+        response = super().dispatch(request, *args, **kwargs)
+        if response.status_code == 200:
+            obj = self.get_object()
+            if obj.is_base:
+                return HttpResponseForbidden("You cannot edit a base category.")
+        return response
 
 
 class CategoryDelete(LoginRequiredMixin, DeleteView):
-    # ...
-    def dispatch(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.is_base:
-            return HttpResponseForbidden("You cannot delete a base category.")
-        return super().dispatch(request, *args, **kwargs)
+    model = Category
+    template_name = 'testsite/delete.html'
+    success_url = reverse_lazy('category')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_type'] = 'category'
+        context['title'] = 'Delete category'
+        return context
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Category.objects.none()
+        return Category.objects.filter(user=self.request.user)
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        if response.status_code == 200:
+            obj = self.get_object()
+            if obj.is_base:
+                return HttpResponseForbidden("You cannot edit a base category.")
+        return response
 
 def page_not_found(request, exception):
     return render(request, 'errors/error404.html', status=404)
+
+def server_error(request):
+    return render(request, 'errors/error500.html', status=500)
+
+def permission_denied(request, exception):
+    return render(request, 'errors/error403.html', status=403)

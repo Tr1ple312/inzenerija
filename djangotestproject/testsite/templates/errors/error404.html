@@ -1,12 +1,16 @@
-<!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Page was not found</title>
+    <title>404 - Page Not Found</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-<h1>This page was not found</h1>
-<a href="{% url 'home' %}">Back in home page</a>
-
+  <div class="error-container">
+    <h1 class="error-code">404</h1>
+    <h2 class="error-title">Page Not Found</h2>
+    <p class="error-message">This page was not found.</p>
+    <a href="{% url 'transaction' %}">← Back to Home</a>
+  </div>
 </body>
 </html>

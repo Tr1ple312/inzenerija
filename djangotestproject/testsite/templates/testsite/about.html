@@ -2,21 +2,24 @@
 
 {% block title %}About{% endblock %}
 
-
-
 {% block body %}
 
-<h1>About Our Project</h1>
-    <p>
-        This website was created as part of a learning project to explore modern web development using Django.
-        It demonstrates the basic structure of a Django application, including views, templates, and routing.
-    </p>
-    <p>
-        We aim to continuously improve the site by adding new features, integrating databases, and following best coding practices.
-        Whether you're new to Django or just exploring, we hope this project helps you get started.
-    </p>
-    <p>
-        Contact us at: <a href="mailto:info@example.com">info@example.com</a>
-    </p>
-    <a href="{% url 'transaction' %}">← Back to Home</a>
+<h1>About This Learning Project</h1>
+
+<p>
+    This website is a part of an educational project designed to help understand modern web development using Django.
+    It showcases the fundamental architecture of a Django application, including Models, Views, and Templates —
+    following the MVC (Model-View-Controller) pattern.
+</p>
+
+<p>The project serves as a practical introduction to building web applications, covering user authentication,
+    database interactions, and clean URL routing.
+</p>
+
+<p>We plan to enhance the project with more features and improvements as we deepen our knowledge of Django and best practices.</p>
+
+<p>Feel free to reach out for questions or collaboration: <a href="mailto:info@example.com">wog20051221@gmail.com</a></p>
+
+<p><a href="{% url 'transaction' %}">← Back to Home</a></p>
+
 {% endblock %}

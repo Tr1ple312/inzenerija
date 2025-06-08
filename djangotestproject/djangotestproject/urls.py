@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include('testsite.urls')),
@@ -9,4 +11,8 @@ urlpatterns = [
 
 ]
 
-handler404 = 'testsite.views.page_not_found'  # Обработчик ошибки 404
+handler403 = 'testsite.views.permission_denied'
+handler404 = 'testsite.views.page_not_found'
+handler500 = 'testsite.views.server_error'
+
+

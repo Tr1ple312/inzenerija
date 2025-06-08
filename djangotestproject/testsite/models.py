@@ -34,17 +34,28 @@ class Transaction(models.Model):
 
 class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=20, unique=True, db_index=True)
+    name = models.CharField(max_length=20, db_index=True)
     description = models.CharField(max_length=500, blank=True, null=True)
     slug = models.SlugField(max_length=20, unique=True, db_index=True)
-    is_base = models.BooleanField(default=False)  # ← добавлено поле
+    is_base = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
         ordering = ['-pk']
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'name'], name='unique_category_per_user')
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.user is not None:
+            if Category.objects.filter(user=None, name__iexact=self.name).exists():
+                raise ValidationError(f"A base category with the name '{self.name}' already exists.")
 
     def save(self, *args, **kwargs):
+        self.full_clean()
+
         if not self.slug:
             base_slug = slugify(self.name)
             slug = base_slug
@@ -53,6 +64,7 @@ class Category(models.Model):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
+
         super().save(*args, **kwargs)
 
     def __str__(self):

@@ -1,71 +1,113 @@
 {% extends 'base.html' %}
 
-{% block title %}Transaction list{% endblock %}
+{% block title %}Transaction List{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1>Transactions</h1>
+<div class="main-container">
+    <div class="content">
+        <h1 class="transaction-title">Transactions</h1>
 
-    <table class="transaction-table">
-        <thead>
-            <tr>
-                <th>№</th>
-                <th>Amount</th>
-                <th>Type</th>
-                <th>Category</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for number, element in numbered_transactions %}
+        <form method="get" action="" class="filter-form">
+            <div class="filter-group">
+                <label for="type">Type</label>
+                <select id="type" name="type">
+                    <option value="" {% if not request.GET.type %}selected{% endif %}>All</option>
+                    <option value="income" {% if request.GET.type == 'income' %}selected{% endif %}>Income</option>
+                    <option value="expense" {% if request.GET.type == 'expense' %}selected{% endif %}>Expense</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="" {% if not request.GET.category %}selected{% endif %}>All</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="date_from">From</label>
+                <input type="date" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="date_to">To</label>
+                <input type="date" id="date_to" name="date_to" value="{{ request.GET.date_to }}">
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter" title="Filter">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <a href="{% url 'transaction' %}" class="btn-reset" title="Reset">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+        </form>
+
+        <table class="transaction-table">
+            <thead>
                 <tr>
-                    <td>{{ number }}</td>
-                    <td>{{ element.amount }}</td>
-                    <td>{{ element.transaction_type }}</td>
-                    <td>{{ element.cat.name }}</td>
-                    <td>{{ element.transaction_date }}</td>
-                    <td>
-                        <a href="{% url 'transaction-update' element.pk %}" class="edit-icon" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="{% url 'transaction-delete' element.pk %}" class="delete-icon" title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
+                    <th>#</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Actions</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="6">No transactions</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for number, element in numbered_transactions %}
+                    <tr>
+                        <td>{{ number }}</td>
+                        <td>{{ element.amount }}</td>
+                        <td>{{ element.transaction_type }}</td>
+                        <td>{{ element.cat.name }}</td>
+                        <td>{{ element.transaction_date }}</td>
+                        <td>
+                            <a href="{% url 'transaction-update' element.pk %}" class="edit-icon" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'transaction-delete' element.pk %}" class="delete-icon" title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align:center;">No transactions found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <!-- Пагинация, как у тебя было -->
-    <div class="pagination-wrapper">
-        {% if page_obj.has_previous %}
-            <a href="?page=1" class="pagination-btn first" title="First">
-                <i class="fas fa-angle-double-left"></i>
-            </a>
-            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn prev" title="Previous">
-                <i class="fas fa-angle-left"></i>
-            </a>
-        {% endif %}
+        <div class="pagination-wrapper">
+            {% with request.GET.urlencode as query_params %}
+                {% if page_obj.has_previous %}
+                    <a href="?page=1&{{ query_params|safe }}" class="pagination-btn first" title="First">
+                        <i class="fas fa-angle-double-left"></i> First
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}&{{ query_params|safe }}" class="pagination-btn prev" title="Previous">
+                        <i class="fas fa-angle-left"></i> Prev
+                    </a>
+                {% endif %}
 
-        <span class="pagination-page">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </span>
+                <span class="pagination-page">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
 
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn next" title="Next">
-                <i class="fas fa-angle-right"></i>
-            </a>
-            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-btn last" title="Last">
-                <i class="fas fa-angle-double-right"></i>
-            </a>
-        {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&{{ query_params|safe }}" class="pagination-btn next" title="Next">
+                        Next <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}&{{ query_params|safe }}" class="pagination-btn last" title="Last">
+                        Last <i class="fas fa-angle-double-right"></i>
+                    </a>
+                {% endif %}
+            {% endwith %}
+        </div>
     </div>
 </div>
 {% endblock %}
-
