@@ -357,7 +357,7 @@ body, html {
 }
 
 .categories-page details summary {
-    font-size: 1.3em;
+    font-size: 1.7çem;
     font-weight: bold;
     cursor: pointer;
     color: #333;
@@ -365,9 +365,10 @@ body, html {
 }
 
 .categories-page details p {
-    font-size: 1em;
-    color: #555;
-    margin-top: 5px;
+    font-size: 1.3em;
+    color: #000; /* чуть темнее */
+    margin-top: 8px;
+    line-height: 1.7;
 }
 
 details[open] summary {
@@ -393,6 +394,21 @@ details[open] summary {
 .categories-page .action-buttons button:hover {
     background-color: #575757;
 }
+
+.base-category-label {
+    display: inline-block;
+    background-color: #e0e0e0;
+    color: #444;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-top: 8px;
+    margin-left: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 
 /* =========================
    Статистика

@@ -36,7 +36,8 @@ class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=20, unique=True, db_index=True)
     description = models.CharField(max_length=500, blank=True, null=True)
-    slug  =  models.SlugField(max_length=20, unique=True,  db_index=True)
+    slug = models.SlugField(max_length=20, unique=True, db_index=True)
+    is_base = models.BooleanField(default=False)  # ← добавлено поле
 
     class Meta:
         verbose_name = 'Category'

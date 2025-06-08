@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 import requests
+from django.http import HttpResponseForbidden
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView, DeleteView
@@ -222,34 +223,22 @@ class CategoryAdd(LoginRequiredMixin, CreateView):
 
 
 class CategoryUpdate(LoginRequiredMixin, UpdateView):
-     model = Category
-     fields = ['name', 'description']
-     template_name = 'testsite/add_new.html'
-     success_url = reverse_lazy('category')
-
-     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['object_type'] = 'category'
-        context['title'] = 'Update category'
-        return context
-
-     def get_queryset(self):
-         return Category.objects.filter(user=self.request.user)
+    # ...
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.is_base:
+            return HttpResponseForbidden("You cannot edit a base category.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class CategoryDelete(LoginRequiredMixin, DeleteView):
-    model = Category
-    template_name = 'testsite/delete.html'
-    success_url = reverse_lazy('category')
+    # ...
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.is_base:
+            return HttpResponseForbidden("You cannot delete a base category.")
+        return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['object_type'] = 'category'
-        context['title'] = 'Delete category'
-        return context
-
-    def get_queryset(self):
-        return Category.objects.filter(user=self.request.user)
 
 def page_not_found(request, exception):
     return render(request, 'errors/error404.html', status=404)

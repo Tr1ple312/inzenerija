@@ -3,29 +3,38 @@
 {% block title %}Categories{% endblock %}
 
 {% block body %}
-    <div class="categories-page">
-        <h1>Categories</h1>
+<div class="categories-page">
+    <h1>Categories</h1>
 
-        {% if categories %}
-            <ul class="no-bullets">
-                {% for category in categories %}
-                    <li>
-                        <details>
-                            <summary>{{ category.name }}</summary>
-                            {% if category.description %}
-                                <p>{{ category.description }}</p>
-                            {% endif %}
+    {% if categories %}
+        <ul class="no-bullets">
+            {% for category in categories %}
+                <li>
+                    <details>
+                        <summary>{{ category.name }}</summary>
+                        {% if category.description %}
+                            <p>{{ category.description }}</p>
+                        {% endif %}
 
+                        {% if not category.is_base %}
                             <div class="action-buttons">
-                                <a href="{% url 'category_update' category.pk %}"><button>Edit Category</button></a>
-                                <a href="{% url 'category_delete' category.pk %}"><button>Delete Category</button></a>
+                                <a href="{% url 'category_update' category.pk %}">
+                                    <button>Edit Category</button>
+                                </a>
+                                <a href="{% url 'category_delete' category.pk %}">
+                                    <button>Delete Category</button>
+                                </a>
                             </div>
-                        </details>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No categories available.</p>
-        {% endif %}
-    </div>
+                        {% else %}
+                            <span class="base-category-label">Default category</span>
+                        {% endif %}
+                    </details>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No categories available.</p>
+    {% endif %}
+</div>
 {% endblock %}
+
